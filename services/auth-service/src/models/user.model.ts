@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { timeStamp } from "node:console";
 
 interface IUser {
   fullName: string;

@@ -7,7 +7,7 @@ const dbConnect = async (): Promise<void> => {
       process.exit(1);
     }
     await mongoose.connect(CONFIG.MONGO_URI);
-    console.log("Auth service db connected successfully")
+    console.log("Auth service db connected successfully");
   } catch (error) {
     if (error instanceof Error) {
       console.log("Auth service Db Connection failed", error.message);
