@@ -10,28 +10,22 @@ interface IUserData {
   role: "User" | "Worker" | "Admin";
 }
 
-export const registerUser = async (data: IUserData) => {
-  const { fullName, email, password, role } = data;
+export const sendEmailService = async (userData: IUserData) => {
+  const { email } = userData;
 
-  //    fin user in db is it already exist
   const isExist = await User.findOne({ email });
 
   if (isExist) {
-    throw new AppError("Email Already Register", 409);
+    throw new AppError(409, "User already Exist , Please login");
   }
 
-  // generate Otp
   const newOtp = otp.generate(4, {
     upperCaseAlphabets: false,
     lowerCaseAlphabets: false,
     specialChars: false,
   });
 
-  //   save  otp in db
-  const storeOtp = await Otp.create({
-    email,
-    otp: newOtp,
-  });
+  const otpDoc = await Otp.create({ email, otp: newOtp });
 
-  return storeOtp;
+  return otpDoc;
 };
