@@ -1,5 +1,6 @@
 import { app } from "./app.js";
+import { CONFIG } from "./config/dotenv.config.js";
 
-app.listen(process.env.PORT, () => {
-  console.log(`mail-server is runing at PORT :: ${process.env.PORT}`);
+app.listen(CONFIG.PORT, () => {
+  console.log(`mail-server is runing at PORT : ${CONFIG.PORT}`);
 });
