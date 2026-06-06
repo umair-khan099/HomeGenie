@@ -1,6 +1,6 @@
 export class AppResponse<T> {
   statusCode: number;
-  data: T;
+  data?: T;
   message: string;
 
   constructor(message: string, data: T, statusCode: number) {
