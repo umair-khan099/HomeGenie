@@ -1,50 +1,62 @@
-import axios from "axios";
+import CONFIG from "../config/config.js";
 import { Otp } from "../models/otp.model.js";
 import { User } from "../models/user.model.js";
 import { AppError } from "../utils/appError.js";
-import otp from "otp-generator";
-import { mailTemplate } from "../template/mail.template.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-interface IUserData {
+export interface ISignUpData {
   fullName: string;
   email: string;
   password: string;
   role: "User" | "Worker" | "Admin";
+  otp: string;
 }
 
-export const sendEmailService = async (userData: IUserData) => {
-  const { email } = userData;
+export const signUpService = async (userData: ISignUpData) => {
+  const { fullName, email, password, role, otp } = userData;
 
-  const isExist = await User.findOne({ email });
-
-  if (isExist) {
-    throw new AppError(409, "User already Exist , Please login");
+  const isUserRegister = await User.findOne({ email });
+  if (isUserRegister) {
+    throw new AppError(404, "Email Already Registered");
   }
 
-  const newOtp = otp.generate(4, {
-    upperCaseAlphabets: false,
-    lowerCaseAlphabets: false,
-    specialChars: false,
+  const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+
+  if (!latestOtp) {
+    throw new AppError(404, "Otp expires");
+  }
+
+  if (latestOtp.otp !== otp) {
+    throw new AppError(422, "incorrect otp");
+  }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    fullName,
+    email,
+    password: hashPassword,
+    role,
   });
-  const otpDoc = await Otp.create({ email, otp: newOtp });
 
-  const mailData = {
-    email: email,
-    subject: "For otp verification",
-    body: mailTemplate(Number(newOtp)),
-    from: "HomeGenie",
-  };
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/api/v1/send-mail",
-      mailData,
-    );
-  } catch (err: any) {
-    console.log(err.code);
-
-    console.log(err.message);
-
-    console.log(err.response?.data);
+  if (!user) {
+    throw new AppError(500, "user registration failed");
   }
-  return otpDoc;
+
+  const payLoad = {
+    _id: user._id,
+    role: user.role,
+    email: user.email,
+  };
+  const userRes = {
+    _id: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role,
+  };
+
+  const token = jwt.sign(payLoad, CONFIG.JWT_SECRET, { expiresIn: "10d" });
+
+  return { userRes, token };
 };

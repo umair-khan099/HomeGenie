@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema<IUser>(
     password: {
       type: String,
       required: [true, "password feild is missing  "],
+      select: false,
     },
     role: {
       type: String,

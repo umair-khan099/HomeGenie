@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import { maxLength } from "zod";
 
-interface IOtp {
+interface IOtp extends mongoose.Document {
   email: string;
   otp: string;
-  createdAt:Date
+  createdAt: Date;
 }
 
 const otpSchema = new mongoose.Schema({
@@ -12,16 +11,18 @@ const otpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   otp: {
     type: String,
-    required: [true, "otp is requiredd"],
-    maxLength: 4,
+    required: [true, "otp required"],
+    match: /^\d{4}$/,
   },
+
   createdAt: {
     type: Date,
-    default: Date.now(),
-    expires: 5 * 60,
+    default: Date.now,
+    expires: 60 * 5,
   },
 });
 
-export const Otp = mongoose.model<IOtp>("otp", otpSchema);
+export const Otp = mongoose.model<IOtp>("Otp", otpSchema);

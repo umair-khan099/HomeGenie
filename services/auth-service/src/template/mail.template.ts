@@ -1,4 +1,4 @@
- export const mailTemplate = (otp: number) => {
+export const mailTemplate = (otp: string) => {
   return `html
 <!DOCTYPE html>
 <html lang="en">
