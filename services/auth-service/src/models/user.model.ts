@@ -5,6 +5,8 @@ interface IUser {
   email: string;
   password: string;
   role: "User" | "Worker" | "Admin";
+  resetToken: string;
+  resetTokenExp: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -29,6 +31,12 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       enum: ["User", "Worker", "Admin"],
       default: "User",
+    },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExp: {
+      type: String,
     },
   },
   { timestamps: true },

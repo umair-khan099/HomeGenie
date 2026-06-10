@@ -1,5 +1,5 @@
 export const mailTemplate = (otp: string) => {
-  return `html
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
