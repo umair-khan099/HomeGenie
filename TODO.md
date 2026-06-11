@@ -1,0 +1,4 @@
+- [ ] Update isAuth middleware to validate decoded JWT payload includes \_id and to handle missing cookies safely
+- [ ] Update updatePasswordController to avoid destructuring/reading req.user when absent or malformed
+- [x] (If needed) Update auth route typo: /update-passwod -> /update-password
+- [x] Run TypeScript build (and/or start auth-service) to ensure no TS errors

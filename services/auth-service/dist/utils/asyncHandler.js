@@ -7,13 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import app from "./app.js";
-import CONFIG from "./config/config.js";
-import dbConnect from "./config/db.config.js";
-const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield dbConnect();
-    app.listen(CONFIG.PORT, () => {
-        console.log(`Auth Server is runing at ${CONFIG.PORT}`);
-    });
+export const asyncHandler = (requestHandler) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield requestHandler(req, res, next);
+    }
+    catch (error) {
+        next(error);
+    }
 });
-startServer();

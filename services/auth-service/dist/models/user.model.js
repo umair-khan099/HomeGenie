@@ -14,11 +14,18 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "password feild is missing  "],
+        select: false,
     },
     role: {
         type: String,
         enum: ["User", "Worker", "Admin"],
         default: "User",
+    },
+    resetToken: {
+        type: String,
+    },
+    resetTokenExp: {
+        type: String,
     },
 }, { timestamps: true });
 export const User = mongoose.model("user", userSchema);

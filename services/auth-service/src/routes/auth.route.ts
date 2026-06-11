@@ -6,14 +6,19 @@ import {
   loginSchema,
   registerAndOtpSchema,
   registerSchema,
+  resetPasswordSchema,
+  updatePasswordSchema,
 } from "../validation/auth.validation.js";
 import {
   forgetPasswordOtpController,
   forgtePasswordVerifyOtpController,
   loginController,
+  resetPasswordController,
   sendEmailController,
   signUpController,
+  updatePasswordController,
 } from "../controllers/auth.controller.js";
+import { isAuth } from "../middlewares/isAuth.middleware.js";
 // import { registerUser } from "../services/auth.service.js";
 
 export const authRouter = Router();
@@ -30,4 +35,18 @@ authRouter.post(
   "/forget-password-otp-verify",
   validate(forgetPasswordOtpVerifySchema),
   forgtePasswordVerifyOtpController,
+);
+
+authRouter.post(
+  "/reset-password",
+  validate(resetPasswordSchema),
+  resetPasswordController,
+);
+
+authRouter.post(
+  "/update-password",
+  isAuth,
+
+  validate(updatePasswordSchema),
+  updatePasswordController,
 );

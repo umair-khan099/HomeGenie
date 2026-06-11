@@ -15,3 +15,14 @@ export interface IForgetPassword {
   email: string;
   newOtp: string;
 }
+
+export interface IResetPassword {
+  token: string;
+  password: string;
+}
+
+export interface IUpdatePassword {
+  _id: string;
+  oldPassword: string;
+  newPassword: string;
+}

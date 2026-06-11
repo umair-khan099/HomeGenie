@@ -7,7 +7,12 @@ import { AppError } from "../utils/appError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
-import { ILoginData, ISignUpData } from "../types/auth.types.js";
+import {
+  ILoginData,
+  IResetPassword,
+  ISignUpData,
+  IUpdatePassword,
+} from "../types/auth.types.js";
 import crypto from "node:crypto";
 
 export const signUpService = async (userData: ISignUpData) => {
@@ -147,4 +152,53 @@ export const forgtePasswordVerifyOtpService = async (
   );
 
   return updatedUser;
+};
+
+export const resetPasswordService = async (data: IResetPassword) => {
+  const { token, password } = data;
+
+  const userDetails = await User.findOne({ resetToken: token });
+
+  if (
+    !userDetails?.resetTokenExp ||
+    String(Date.now()) > userDetails.resetTokenExp
+  ) {
+    throw new Error("Reset token expired");
+  }
+  const hashPassword = await bcrypt.hash(password, 10);
+  const updatedUser = await User.findOneAndUpdate(
+    { resetToken: token },
+    { password: hashPassword, resetToken: "", resetTokenExp: "" },
+    { returnDocument: "after" },
+  );
+  return updatedUser;
+};
+
+export const updatePasswordService = async (data: IUpdatePassword) => {
+  const { _id, oldPassword, newPassword } = data;
+  const isUserExist = await User.findById({ _id }).select("+password");
+
+  if (!isUserExist) {
+    throw new AppError(404, "user not found");
+  }
+  const isPasswordCorrect = await bcrypt.compare(
+    oldPassword,
+    isUserExist.password,
+  );
+
+  if (!isPasswordCorrect) {
+    throw new AppError(400, "password is not correct");
+  }
+
+  const hashPassword = await bcrypt.hash(newPassword, 10);
+
+  const updatePassword = await User.findByIdAndUpdate(
+    { _id },
+    {
+      password: hashPassword,
+    },
+    { returnDocument: "after" },
+  );
+
+  return updatePassword;
 };
