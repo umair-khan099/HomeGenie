@@ -13,8 +13,9 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
       ? authHeader.split(" ")[1]
       : undefined;
 
-    const tokenFromCookie = (req as any).cookies?.token;
-    const token = tokenFromHeader || tokenFromCookie;
+    const tokenFromCookie = (req as any).cookies?.accessToken;
+    const tokenFromBody = req.body?.token;
+    const token = tokenFromHeader || tokenFromCookie || tokenFromBody;
 
     if (!token) {
       throw new AppError(401, "Unauthorized");

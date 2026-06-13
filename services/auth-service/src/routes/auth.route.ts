@@ -14,6 +14,7 @@ import {
   forgtePasswordVerifyOtpController,
   loginController,
   resetPasswordController,
+  rotateRefreshTokenController,
   sendEmailController,
   signUpController,
   updatePasswordController,
@@ -50,3 +51,5 @@ authRouter.post(
   validate(updatePasswordSchema),
   updatePasswordController,
 );
+
+authRouter.post("/rotate-token", rotateRefreshTokenController);

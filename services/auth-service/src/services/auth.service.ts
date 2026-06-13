@@ -14,6 +14,8 @@ import {
   IUpdatePassword,
 } from "../types/auth.types.js";
 import crypto from "node:crypto";
+import { getRedisClient } from "../config/redis.config.js";
+import { generateToken } from "../utils/genrateToken.js";
 
 export const signUpService = async (userData: ISignUpData) => {
   const { fullName, email, password, role, otp } = userData;
@@ -22,14 +24,14 @@ export const signUpService = async (userData: ISignUpData) => {
   if (isUserRegister) {
     throw new AppError(404, "Email Already Registered");
   }
-
-  const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+  const client = getRedisClient();
+  const latestOtp = await client.get(`signUp_otp:${email}`);
 
   if (!latestOtp) {
     throw new AppError(404, "Otp expires");
   }
 
-  if (latestOtp.otp !== otp) {
+  if (latestOtp !== otp) {
     throw new AppError(422, "incorrect otp");
   }
 
@@ -47,20 +49,30 @@ export const signUpService = async (userData: ISignUpData) => {
   }
 
   const payLoad = {
-    _id: user._id,
+    userId: user._id,
     role: user.role,
     email: user.email,
   };
+
+  const accessToken = generateToken(payLoad, CONFIG.ACCESS_TOKEN_SECRET, "15m");
+  const refreshToken = generateToken(
+    { userId: user._id },
+    CONFIG.REFRESH_TOKEN_SECRET,
+    "10d",
+  );
+  await client.set(`session:${user._id}`, refreshToken, {
+    EX: 864000,
+  });
+
   const userRes = {
     _id: user._id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    accessToken: accessToken,
   };
 
-  const token = jwt.sign(payLoad, CONFIG.JWT_SECRET, { expiresIn: "10d" });
-
-  return { userRes, token };
+  return { userRes, accessToken, refreshToken };
 };
 
 export const loginService = async (userData: ILoginData) => {
@@ -76,20 +88,30 @@ export const loginService = async (userData: ILoginData) => {
     throw new AppError(422, "password is incorrect");
   }
   const payLoad = {
-    _id: user._id,
+    userId: user._id,
     role: user.role,
     email: user.email,
   };
-  const token = jwt.sign(payLoad, CONFIG.JWT_SECRET);
+  const accessToken = generateToken(payLoad, CONFIG.ACCESS_TOKEN_SECRET, "15m");
+  const refreshToken = generateToken(
+    { userId: user._id },
+    CONFIG.REFRESH_TOKEN_SECRET,
+    "10d",
+  );
 
+  const client = getRedisClient();
+  await client.set(`session:${user._id}`, refreshToken, {
+    EX: 864000,
+  });
   const userRes = {
     _id: user._id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    accessToken: accessToken,
   };
 
-  return { userRes, token };
+  return { userRes, accessToken, refreshToken };
 };
 
 export const forgetPasswordOtpService = async (email: string) => {
@@ -103,8 +125,10 @@ export const forgetPasswordOtpService = async (email: string) => {
     lowerCaseAlphabets: false,
     specialChars: false,
   });
-
-  const newOtp = await Otp.create({ email, otp });
+  const client = getRedisClient();
+  await client.set(`forgetPasswordOtp:${email}`, otp, {
+    EX: 600,
+  });
 
   const mailData = {
     email: email,
@@ -117,7 +141,7 @@ export const forgetPasswordOtpService = async (email: string) => {
       "http://localhost:8000/api/v1/send-mail",
       mailData,
     );
-    return newOtp;
+    return otp;
   } catch (err: any) {
     console.log(err.code);
 
@@ -131,13 +155,14 @@ export const forgtePasswordVerifyOtpService = async (
   email: string,
   otp: string,
 ) => {
-  const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+  const client = getRedisClient();
+  const latestOtp = await client.get(`forgetPasswordOtp:${email}`);
 
   if (!latestOtp) {
     throw new AppError(404, "otp has expired");
   }
 
-  if (latestOtp.otp !== otp) {
+  if (latestOtp !== otp) {
     throw new AppError(404, "Incorrect otp ");
   }
   const token = crypto.randomBytes(32).toString("hex");
@@ -163,7 +188,7 @@ export const resetPasswordService = async (data: IResetPassword) => {
     !userDetails?.resetTokenExp ||
     String(Date.now()) > userDetails.resetTokenExp
   ) {
-    throw new Error("Reset token expired");
+    throw new AppError(400, "Reset token expired");
   }
   const hashPassword = await bcrypt.hash(password, 10);
   const updatedUser = await User.findOneAndUpdate(
@@ -201,4 +226,42 @@ export const updatePasswordService = async (data: IUpdatePassword) => {
   );
 
   return updatePassword;
+};
+
+export const rotateRefreshToken = async (refreshToken: string) => {
+  const decoded = jwt.verify(refreshToken, CONFIG.REFRESH_TOKEN_SECRET);
+  if (!decoded) {
+    throw new AppError(404, "unAuthorized refresh token not found");
+  }
+  if (typeof decoded === "string") {
+    throw new AppError(401, "Invalid refresh token");
+  }
+
+  const userId = decoded.userId;
+
+  // redis client
+  const client = getRedisClient();
+  const storedToken = await client.get(`session:${userId}`);
+
+  if (!storedToken || storedToken !== refreshToken) {
+    throw new AppError(403, "session Expired");
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(404, "user not found");
+  }
+  const payLoad = {
+    userId: user?._id,
+    role: user?.role,
+    email: user?.email,
+  };
+  const accessToken = generateToken(payLoad, CONFIG.ACCESS_TOKEN_SECRET, "15m");
+  const newRefreshToken = generateToken(
+    { userId: user._id },
+    CONFIG.REFRESH_TOKEN_SECRET,
+    "10d",
+  );
+
+  await client.set(`session:${user._id}`, newRefreshToken, { EX: 864000 });
+  return { accessToken, newRefreshToken };
 };

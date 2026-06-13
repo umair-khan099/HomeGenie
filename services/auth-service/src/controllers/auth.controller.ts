@@ -7,15 +7,17 @@ import {
   forgtePasswordVerifyOtpService,
   loginService,
   resetPasswordService,
+  rotateRefreshToken,
   signUpService,
   updatePasswordService,
 } from "../services/auth.service.js";
 import { AppError } from "../utils/appError.js";
+import { options } from "../utils/genrateToken.js";
 
 export const sendEmailController = asyncHandler(
   async (req: Request, res: Response) => {
     const response = await sendEmailService(req.body);
-    res.status(200).json(new AppResponse(200, { response }, "user otp send"));
+    res.status(200).json(new AppResponse(200, null, "user otp send"));
   },
 );
 
@@ -25,7 +27,7 @@ export const signUpController = asyncHandler(
 
     res
       .status(200)
-      .cookie("token", result.token)
+      .cookie("refreshToken", result.refreshToken, options)
       .json(
         new AppResponse(
           200,
@@ -43,7 +45,7 @@ export const loginController = asyncHandler(
 
     res
       .status(200)
-      .cookie("token", result.token)
+      .cookie("refreshToken", result.refreshToken, options)
       .json(
         new AppResponse(
           200,
@@ -105,5 +107,26 @@ export const updatePasswordController = asyncHandler(
     res
       .status(200)
       .json(new AppResponse(200, { result }, "password updated successfully"));
+  },
+);
+
+export const rotateRefreshTokenController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      throw new AppError(400, "UnAuthorized");
+    }
+    const result = await rotateRefreshToken(refreshToken);
+
+    res
+      .status(200)
+      .cookie("refreshToken", result.newRefreshToken)
+      .json(
+        new AppResponse(
+          200,
+          { accessToken: result.accessToken },
+          "refreshToken rotate successfully",
+        ),
+      );
   },
 );

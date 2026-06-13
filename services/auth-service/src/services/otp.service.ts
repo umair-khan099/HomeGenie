@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { AppError } from "../utils/appError.js";
 import otp from "otp-generator";
 import { mailTemplate } from "../template/mail.template.js";
+import { getRedisClient } from "../config/redis.config.js";
 
 interface IUserData {
   fullName: string;
@@ -26,7 +27,11 @@ export const sendEmailService = async (userData: IUserData) => {
     lowerCaseAlphabets: false,
     specialChars: false,
   });
-  const otpDoc = await Otp.create({ email, otp: newOtp });
+
+  const client = getRedisClient();
+  await client.set(`signUp_otp:${email}`, newOtp, {
+    EX: 300,
+  });
 
   const mailData = {
     email: email,
@@ -46,6 +51,4 @@ export const sendEmailService = async (userData: IUserData) => {
 
     console.log(err.response?.data);
   }
-  return otpDoc;
 };
-
