@@ -22,7 +22,7 @@ export interface IResetPassword {
 }
 
 export interface IUpdatePassword {
-  _id: string;
+  userId: string;
   oldPassword: string;
   newPassword: string;
 }

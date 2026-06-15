@@ -1,18 +1,23 @@
 import z from "zod";
-import { forgetPasswordOtpController } from "../controllers/auth.controller.js";
 
-export const registerSchema = z.object({
-  fullName: z.string().trim().min(3),
-  email: z.string().trim().email(),
-  password: z.string().min(6),
-  role: z.enum(["User", "Worker", "Admin"]).optional(),
-});
+export const registerSchema = z
+  .object({
+    fullName: z.string().trim().min(3),
+    email: z.string().trim().email(),
+    password: z.string().min(6),
+    confirmPassword: z.string().min(6),
+    role: z.enum(["Customer", "Service Provider", "Admin"]).optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "confirm password not match to password",
+    path: ["confirmPassword"],
+  });
 
 export const registerAndOtpSchema = z.object({
   fullName: z.string().trim().min(3),
   email: z.string().trim().email(),
   password: z.string().min(6),
-  role: z.enum(["User", "Worker", "Admin"]).optional(),
+  role: z.enum(["Customer", "Service Provider", "Admin"]).optional(),
   otp: z.string().min(4).max(4),
 });
 

@@ -40,7 +40,6 @@ export const signUpController = asyncHandler(
 
 export const loginController = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log(req.body);
     const result = await loginService(req.body);
 
     res
@@ -90,16 +89,18 @@ export const resetPasswordController = asyncHandler(
 
 export const updatePasswordController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { oldPassword, newPassword } = req.body;
+    const userHeader = req.header("user_id");
 
-    if (!req.user || typeof req.user === "string" || !("_id" in req.user)) {
+    if (!userHeader) {
       throw new AppError(401, "Unauthorized");
     }
 
-    const { _id } = req.user;
+    const user = JSON.parse(userHeader);
+
+    const { oldPassword, newPassword } = req.body;
 
     const result = await updatePasswordService({
-      _id,
+      userId: user.userId,
       oldPassword,
       newPassword,
     });

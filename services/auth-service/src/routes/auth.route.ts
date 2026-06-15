@@ -19,7 +19,6 @@ import {
   signUpController,
   updatePasswordController,
 } from "../controllers/auth.controller.js";
-import { isAuth } from "../middlewares/isAuth.middleware.js";
 // import { registerUser } from "../services/auth.service.js";
 
 export const authRouter = Router();
@@ -44,10 +43,8 @@ authRouter.post(
   resetPasswordController,
 );
 
-authRouter.post(
+authRouter.patch(
   "/update-password",
-  isAuth,
-
   validate(updatePasswordSchema),
   updatePasswordController,
 );

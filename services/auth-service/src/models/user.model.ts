@@ -4,7 +4,7 @@ interface IUser {
   fullName: string;
   email: string;
   password: string;
-  role: "User" | "Worker" | "Admin";
+  role: "Customer" | "Service Provider" | "Admin";
   resetToken: string;
   resetTokenExp: string;
 }
@@ -29,8 +29,8 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["User", "Worker", "Admin"],
-      default: "User",
+      enum: ["Customer", "Service Provider", "Admin"],
+      default: "Customer",
     },
     resetToken: {
       type: String,

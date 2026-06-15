@@ -200,8 +200,8 @@ export const resetPasswordService = async (data: IResetPassword) => {
 };
 
 export const updatePasswordService = async (data: IUpdatePassword) => {
-  const { _id, oldPassword, newPassword } = data;
-  const isUserExist = await User.findById({ _id }).select("+password");
+  const { userId, oldPassword, newPassword } = data;
+  const isUserExist = await User.findById(userId).select("+password");
 
   if (!isUserExist) {
     throw new AppError(404, "user not found");
@@ -218,7 +218,7 @@ export const updatePasswordService = async (data: IUpdatePassword) => {
   const hashPassword = await bcrypt.hash(newPassword, 10);
 
   const updatePassword = await User.findByIdAndUpdate(
-    { _id },
+    userId,
     {
       password: hashPassword,
     },
