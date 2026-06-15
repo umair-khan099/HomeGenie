@@ -9,10 +9,18 @@ import {
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 import { signUpMailOtpSendService } from "../services/signup.service";
 
 const SignUp = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -32,7 +40,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoading(true);
     if (formData.password.length < 6) {
       toast.error("Password must be minimum 6 Char");
       return;
@@ -46,11 +54,14 @@ const SignUp = () => {
     try {
       const response = await signUpMailOtpSendService(formData);
       console.log(response);
+
       toast.dismiss(toastId);
-      toast.success(" please make sure to check spam mails also ");
+      toast.success("please make sure to check spam mails also");
     } catch (error) {
       toast.dismiss(toastId);
       toast.error("somthing went worng during sign up send otp mail call ");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,40 +121,48 @@ const SignUp = () => {
               }}
             />
 
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type="password"
-              variant="outlined"
-              size="small"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 0,
-                },
-              }}
-            />
+            <FormControl fullWidth size="small">
+              <InputLabel>Password</InputLabel>
 
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              variant="outlined"
-              size="small"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 0,
-                },
-              }}
-            />
+              <OutlinedInput
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                label="Password"
+                sx={{ borderRadius: 0 }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <FormControl fullWidth size="small">
+              <InputLabel>Confirm Password</InputLabel>
 
+              <OutlinedInput
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                label="Confirm Password"
+                sx={{ borderRadius: 0 }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
             <FormControl fullWidth size="small" required>
               <InputLabel id="role-label" style={{ borderRadius: 0 }}>
                 Select Role
@@ -164,6 +183,7 @@ const SignUp = () => {
 
             <Button
               type="submit"
+              disabled={loading}
               variant="contained"
               size="large"
               sx={{
@@ -178,7 +198,7 @@ const SignUp = () => {
                 borderRadius: 0, // Removed border radius
               }}
             >
-              Sign Up
+              {loading ? "Loading..." : "Sign Up"}
             </Button>
           </form>
 
