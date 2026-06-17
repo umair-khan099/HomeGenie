@@ -17,6 +17,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 import { signUpMailOtpSendService } from "../services/signup.service";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -55,17 +56,19 @@ const SignUpForm = () => {
 
     const toastId = toast.loading("Sending mail...");
     try {
-      const response = await signUpMailOtpSendService(formData);
-      console.log(response);
-
+      await signUpMailOtpSendService(formData);
       toast.dismiss(toastId);
-      toast.success("please make sure to check spam mails also");
+      toast.success("please make sure to check spam mails ");
+      setLoading(false);
+      navigate("/verify-otp", { state: formData });
     } catch (error) {
       toast.dismiss(toastId);
-      toast.error("somthing went worng during sign up send otp mail call ");
-    } finally {
-      navigate("/verify-otp", { state: formData });
       setLoading(false);
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message);
+      } else {
+        toast.error("somthing went worng");
+      }
     }
   };
   return (
@@ -174,7 +177,7 @@ const SignUpForm = () => {
             style={{ borderRadius: 0 }}
           >
             <MenuItem value="Customer">Customer</MenuItem>
-            <MenuItem value=" Service Provider">Service Provider</MenuItem>
+            <MenuItem value="Service Provider">Service Provider</MenuItem>
           </Select>
         </FormControl>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Typography, Button } from "@mui/material";
 import OtpInput from "react-otp-input";
@@ -8,34 +8,42 @@ import {
   signUpMailOtpSendService,
   signUpService,
 } from "../services/signup.service";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setToken } from "../store/auth.slice";
+import type { signUpPayload } from "../../../types/auth.type";
 
 const VerifyOtp = () => {
   // store data in variable
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   //  fetch data from signUp component
   const location = useLocation();
-  const data = location.state;
+  const data: signUpPayload = {
+    ...((location.state as Omit<signUpPayload, "otp">) || {}),
+    otp,
+  } as signUpPayload;
 
-  //set otp in data
-  data.otp = otp;
-
-  console.log(data);
   const handleVerifyOtp = async () => {
     const toastId = toast.loading("verifying otp");
     try {
       setLoading(true);
       const response = await signUpService(data);
-
+      dispatch(setToken(response.data?.user?.accessToken));
       toast.dismiss(toastId);
-      toast.success(response?.message);
+      toast.success(response?.data?.message);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setLoading(false);
       toast.dismiss(toastId);
-      toast.error("verify otp error ");
+
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message);
+      } else {
+        toast.error("somthing went worng");
+      }
     }
   };
 
@@ -46,6 +54,7 @@ const VerifyOtp = () => {
       console.log(response);
       toast.success("please make sure to check spam mails also");
     } catch (error) {
+      console.error(error);
       toast.error("somthing went worng during sign up send otp mail call ");
     }
   };
