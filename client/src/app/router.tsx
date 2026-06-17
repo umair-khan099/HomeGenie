@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import NavBar from "../components/NavBar";
 import Login from "../features/auth/pages/Login";
 import SignUp from "../features/auth/pages/SignUp";
+import VerifyOtp from "../features/auth/pages/VerifyOtp";
 
 export const routes = createBrowserRouter([
   {
@@ -24,6 +25,15 @@ export const routes = createBrowserRouter([
       <>
         <NavBar />
         <SignUp />
+      </>
+    ),
+  },
+  {
+    path: "/verify-otp",
+    element: (
+      <>
+        <NavBar />
+        <VerifyOtp />
       </>
     ),
   },
