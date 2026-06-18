@@ -18,7 +18,7 @@ export const login = async (data: loginPayload) => {
 };
 
 export const forgetPasswordGetOtp = async (email: string) => {
-  return await api.post("/auth/forget-password", email);
+  return await api.post("/auth/forget-password", { email });
 };
 
 export const forgetPasswordVerifyOtp = async (email: string, otp: string) => {

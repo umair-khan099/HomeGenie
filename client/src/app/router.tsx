@@ -4,6 +4,7 @@ import NavBar from "../components/NavBar";
 import Login from "../features/auth/pages/Login";
 import SignUp from "../features/auth/pages/SignUp";
 import VerifyOtp from "../features/auth/pages/VerifyOtp";
+import ForgetPassword from "../features/auth/pages/ForgetPassword";
 
 export const routes = createBrowserRouter([
   {
@@ -34,6 +35,15 @@ export const routes = createBrowserRouter([
       <>
         <NavBar />
         <VerifyOtp />
+      </>
+    ),
+  },
+  {
+    path: "/reset-password",
+    element: (
+      <>
+        <NavBar />
+        <ForgetPassword />
       </>
     ),
   },
