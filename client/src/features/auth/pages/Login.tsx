@@ -13,7 +13,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 import { loginInService } from "../services/login.service";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setToken } from "../store/auth.slice";
 import axios from "axios";
@@ -26,7 +26,7 @@ const Login = () => {
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);  
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,12 +124,20 @@ const Login = () => {
                 }
               />
             </FormControl>
-
+            <div className="flex justify-end">
+              <Link
+                to="/reset-password"
+                className="text-sm text-gray-500 hover:text-gray-900 hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             {/* Submit Button */}
             <Button
               type="submit"
               variant="contained"
               size="large"
+              disabled={loading}
               sx={{
                 mt: 2,
                 bgcolor: "#111827",
@@ -142,7 +150,7 @@ const Login = () => {
                 borderRadius: 0,
               }}
             >
-              Log In
+              {loading ? "Logging In..." : "Log In"}
             </Button>
           </form>
 
