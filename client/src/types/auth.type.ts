@@ -10,3 +10,9 @@ export type loginPayload = {
   email: string;
   password: string;
 };
+
+export type forgetPasswordPayload = {
+  token: string;
+  password: string;
+  confirmPassword: string;
+};
