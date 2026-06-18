@@ -14,7 +14,7 @@ export const signUpMailOtpSendService = async (data: signUpPayload) => {
 export const signUpService = async (data: signUpPayload) => {
   const response = await SignUp(data);
   if (!response?.data?.success) {
-    throw new Error("Somthing went worng at sending signUp OTP");
+    throw new Error("Somthing went worng at sign up");
   }
   return response.data;
 };
