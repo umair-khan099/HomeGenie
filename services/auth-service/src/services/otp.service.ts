@@ -5,6 +5,7 @@ import { AppError } from "../utils/appError.js";
 import otp from "otp-generator";
 import { mailTemplate } from "../template/mail.template.js";
 import { getRedisClient } from "../config/redis.config.js";
+import { sendOtpProducer } from "../producer/sendOtpProducer.js";
 
 interface IUserData {
   fullName: string;
@@ -39,16 +40,11 @@ export const sendEmailService = async (userData: IUserData) => {
     body: mailTemplate(newOtp),
     from: "HomeGenie",
   };
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/api/v1/send-mail",
-      mailData,
-    );
-  } catch (err: any) {
-    console.log(err.code);
 
-    console.log(err.message);
+  sendOtpProducer(mailData);
 
-    console.log(err.response?.data);
-  }
+  // const response = await axios.post(
+  //   "http://localhost:8000/api/v1/send-mail",
+  //   mailData,
+  // );
 };

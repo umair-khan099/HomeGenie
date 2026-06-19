@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 import CONFIG from "./config.js";
+
 let client: RedisClientType;
 
 export const connectRedis = async () => {

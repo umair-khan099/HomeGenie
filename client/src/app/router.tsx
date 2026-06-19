@@ -24,7 +24,6 @@ export const routes = createBrowserRouter([
     path: "/signup",
     element: (
       <>
-        <NavBar />
         <SignUp />
       </>
     ),
@@ -33,7 +32,6 @@ export const routes = createBrowserRouter([
     path: "/verify-otp",
     element: (
       <>
-        <NavBar />
         <VerifyOtp />
       </>
     ),
@@ -42,7 +40,6 @@ export const routes = createBrowserRouter([
     path: "/reset-password",
     element: (
       <>
-        <NavBar />
         <ForgetPassword />
       </>
     ),
