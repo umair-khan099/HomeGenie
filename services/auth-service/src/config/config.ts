@@ -4,7 +4,6 @@ dotenv.config();
 const requiredEnvVars = [
   "PORT",
   "MONGO_URI",
-  "JWT_SECRET",
   "REDIS_PORT",
   "REDIS_PASS",
   "REDIS_HOST",

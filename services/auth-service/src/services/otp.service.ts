@@ -43,8 +43,4 @@ export const sendEmailService = async (userData: IUserData) => {
 
   sendOtpProducer(mailData);
 
-  // const response = await axios.post(
-  //   "http://localhost:8000/api/v1/send-mail",
-  //   mailData,
-  // );
 };

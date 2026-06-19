@@ -1,7 +1,9 @@
 import amqplib, { Channel } from "amqplib";
 
 let channel: Channel;
-export const MAIL_EXCHANGE = "mail_exchange";
+const MAIL_EXCHANGE = "mail_exchange";
+export const MAIL_QUEUE = "mail_queue";
+const MAIL_ROUTE_KEY = "mail_Routing_Key";
 
 export const connectRabbitMQ = async () => {
   try {
@@ -9,9 +11,11 @@ export const connectRabbitMQ = async () => {
     channel = await connection.createChannel();
 
     await channel.assertExchange(MAIL_EXCHANGE, "direct", { durable: false });
-    console.log(" Auth Service Rabbit MQ connection established successfully");
+    await channel.assertQueue(MAIL_QUEUE, { durable: false });
+    await channel.bindQueue(MAIL_QUEUE, MAIL_EXCHANGE, MAIL_ROUTE_KEY);
+    console.log(" Mail Service Rabbit MQ connection established successfully");
   } catch (error) {
-    console.log(" Auth service Rabbit MQ connection error", error);
+    console.log(" Mail service Rabbit MQ connection error", error);
   }
 };
 
