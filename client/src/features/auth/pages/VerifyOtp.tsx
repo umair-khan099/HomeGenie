@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Typography, Button } from "@mui/material";
 import OtpInput from "react-otp-input";
 import LogoAnimation from "../components/LogoAnimation";
@@ -18,6 +18,7 @@ const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //  fetch data from signUp component
   const location = useLocation();
@@ -35,6 +36,7 @@ const VerifyOtp = () => {
       toast.dismiss(toastId);
       toast.success(response?.data?.message);
       setLoading(false);
+      navigate("/");
     } catch (error) {
       setLoading(false);
       toast.dismiss(toastId);

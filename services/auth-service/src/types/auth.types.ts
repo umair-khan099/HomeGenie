@@ -2,7 +2,7 @@ export interface ISignUpData {
   fullName: string;
   email: string;
   password: string;
-  role: "User" | "Worker" | "Admin";
+  role: "Customer" | "Service Provider" | "Admin";
   otp: string;
 }
 

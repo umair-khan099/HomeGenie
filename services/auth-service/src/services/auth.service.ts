@@ -1,6 +1,5 @@
 import axios from "axios";
 import CONFIG from "../config/config.js";
-import { Otp } from "../models/otp.model.js";
 import { User } from "../models/user.model.js";
 import { mailTemplate } from "../template/mail.template.js";
 import { AppError } from "../utils/appError.js";
@@ -16,6 +15,7 @@ import {
 import crypto from "node:crypto";
 import { getRedisClient } from "../config/redis.config.js";
 import { generateToken } from "../utils/genrateToken.js";
+import { sendOtpProducer } from "../producer/sendOtpProducer.js";
 
 export const signUpService = async (userData: ISignUpData) => {
   const { fullName, email, password, role, otp } = userData;
@@ -117,7 +117,7 @@ export const loginService = async (userData: ILoginData) => {
 export const forgetPasswordOtpService = async (email: string) => {
   const isUserExist = await User.findOne({ email });
   if (!isUserExist) {
-    throw new AppError(404, "user not fount");
+    throw new AppError(404, "user not found");
   }
 
   const otp = otpGenerator.generate(4, {
@@ -136,19 +136,8 @@ export const forgetPasswordOtpService = async (email: string) => {
     body: mailTemplate(otp),
     from: "HomeGenie",
   };
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/api/v1/send-mail",
-      mailData,
-    );
-    return otp;
-  } catch (err: any) {
-    console.log(err.code);
 
-    console.log(err.message);
-
-    console.log(err.response?.data);
-  }
+  sendOtpProducer(mailData);
 };
 
 export const forgtePasswordVerifyOtpService = async (
