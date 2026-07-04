@@ -44,4 +44,5 @@ app.use("/api/v1/auth/rotate-token", authProxy);
 //private Route
 //auth Route
 app.use("/api/v1/auth/update-password", isAuth, authProxy);
+app.use("/api/v1/user", proxy("http://localhost:3002"));
 export default app;
