@@ -1,22 +1,27 @@
 import amqplib, { Channel } from "amqplib";
-import { Dirent } from "node:fs";
 
 let channel: Channel;
-export const MAIL_EXCHANGE = "mail_exchange";
-export const PROFILE_EXCHANGE = "profile_exchange";
+const PROFILE_EXCHANGE = "profile_exchange";
+export const PROFILE_QUEUE = "profile_queue";
+const PROFILE_ROUTING_KEY = "profile_routing_key";
 
 export const connectRabbitMQ = async () => {
   try {
     const connection = await amqplib.connect("amqp://localhost");
     channel = await connection.createChannel();
 
-    await channel.assertExchange(MAIL_EXCHANGE, "direct", { durable: false });
     await channel.assertExchange(PROFILE_EXCHANGE, "direct", {
       durable: true,
     });
-    console.log(" Auth Service Rabbit MQ connection established successfully");
+    await channel.assertQueue(PROFILE_QUEUE, { durable: false });
+    await channel.bindQueue(
+      PROFILE_QUEUE,
+      PROFILE_EXCHANGE,
+      PROFILE_ROUTING_KEY,
+    );
+    console.log(" User Service Rabbit MQ connection established successfully");
   } catch (error) {
-    console.log(" Auth service Rabbit MQ connection error", error);
+    console.log(" Mail service Rabbit MQ connection error", error);
   }
 };
 

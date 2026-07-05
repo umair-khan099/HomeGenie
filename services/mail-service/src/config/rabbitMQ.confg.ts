@@ -1,4 +1,4 @@
-import amqplib, { Channel } from "amqplib";
+import amqplib, { Channel } from "amqplib"; 
 
 let channel: Channel;
 const MAIL_EXCHANGE = "mail_exchange";
