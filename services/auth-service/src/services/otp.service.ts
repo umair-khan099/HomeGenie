@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Otp } from "../models/otp.model.js";
 import { User } from "../models/user.model.js";
 import { AppError } from "../utils/appError.js";
 import otp from "otp-generator";
@@ -42,5 +41,4 @@ export const sendEmailService = async (userData: IUserData) => {
   };
 
   sendOtpProducer(mailData);
-
 };

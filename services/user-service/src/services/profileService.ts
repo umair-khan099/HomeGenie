@@ -11,7 +11,7 @@ interface ICreateProfile {
 }
 
 export const createProfileService = async (data: ICreateProfile) => {
-  const { fullName, role, phone, authUserId, email, profileImage } = data;
+  const { fullName, role, authUserId, email, profileImage } = data;
 
   // cheak if the user exist already
 
@@ -24,7 +24,6 @@ export const createProfileService = async (data: ICreateProfile) => {
   const profile = await User.create({
     fullName,
     role,
-    phone,
     authUserId,
     email,
     profileImage,
@@ -32,6 +31,3 @@ export const createProfileService = async (data: ICreateProfile) => {
 
   return profile;
 };
-
-
- 

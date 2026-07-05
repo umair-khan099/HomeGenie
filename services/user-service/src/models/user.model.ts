@@ -24,7 +24,6 @@ const userSchema = new Schema(
 
     phone: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       match: /^[0-9]{10}$/,
