@@ -7,9 +7,13 @@ import {
 export const createProfileProducer = (data: any) => {
   const channel = getRabbitMqChannel();
 
-  channel.publish(
+  console.log("Publishing:", data);
+
+  const ok = channel.publish(
     PROFILE_EXCHANGE,
     "profile_routing_key",
     Buffer.from(JSON.stringify(data)),
   );
+
+  console.log("Publish Status:", ok);
 };

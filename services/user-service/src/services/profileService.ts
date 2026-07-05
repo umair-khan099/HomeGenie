@@ -4,7 +4,6 @@ import { AppError } from "../utils/appError.js";
 interface ICreateProfile {
   fullName: string;
   role: "Customer" | "Service Provider";
-  phone: string;
   authUserId: string;
   email: string;
   profileImage: string;
