@@ -21,6 +21,9 @@ import { createProfileProducer } from "../producer/profileProducer.js";
 export const signUpService = async (userData: ISignUpData) => {
   const { fullName, email, password, role, otp } = userData;
 
+  const profileImage =
+    await `https://api.dicebear.com/10.x/initials/svg?seed=${fullName}`;
+
   const isUserRegister = await User.findOne({ email });
   if (isUserRegister) {
     throw new AppError(404, "Email Already Registered");
@@ -49,7 +52,14 @@ export const signUpService = async (userData: ISignUpData) => {
     throw new AppError(500, "user registration failed");
   }
 
-  createProfileProducer({ fullName, role, email, authUserId: user._id });
+  createProfileProducer({
+    fullName,
+    role,
+    email,
+    authUserId: user._id,
+    profileImage,
+  });
+  
   const payLoad = {
     userId: user._id,
     role: user.role,

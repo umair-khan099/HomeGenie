@@ -31,6 +31,19 @@ const authProxy = proxy("http://localhost:3001", {
   },
 });
 
+const userProxy = proxy("http://localhost:3002", {
+  proxyReqPathResolver: (req) => {
+    return req.originalUrl.replace("/api/v1/user", "");
+  },
+
+  proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+    if (srcReq.user) {
+      proxyReqOpts.headers["user_id"] = JSON.stringify(srcReq.user);
+    }
+    return proxyReqOpts;
+  },
+});
+
 // public Route
 // auth Route
 app.use("/api/v1/auth/send-mail", authProxy);
@@ -45,6 +58,8 @@ app.use("/api/v1/auth/rotate-token", authProxy);
 //auth Route
 app.use("/api/v1/auth/update-password", isAuth, authProxy);
 
-// create profile
-app.use("/api/v1/user", proxy("http://localhost:3002"));
+// get  profile
+
+app.use("/api/v1/user/update-profile", isAuth, userProxy);
+app.use("/api/v1/user/get-profile", isAuth, userProxy);
 export default app;
