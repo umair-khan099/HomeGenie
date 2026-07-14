@@ -21,8 +21,7 @@ import { createProfileProducer } from "../producer/profileProducer.js";
 export const signUpService = async (userData: ISignUpData) => {
   const { fullName, email, password, role, otp } = userData;
 
-  const profileImage =
-    await `https://api.dicebear.com/10.x/initials/svg?seed=${fullName}`;
+  const profileImage = `https://api.dicebear.com/10.x/initials/svg?seed=${fullName}`;
 
   const isUserRegister = await User.findOne({ email });
   if (isUserRegister) {
@@ -52,14 +51,14 @@ export const signUpService = async (userData: ISignUpData) => {
     throw new AppError(500, "user registration failed");
   }
 
-  createProfileProducer({
+  await createProfileProducer({
     fullName,
     role,
     email,
     authUserId: user._id,
     profileImage,
   });
-  
+
   const payLoad = {
     userId: user._id,
     role: user.role,
@@ -104,7 +103,7 @@ export const loginService = async (userData: ILoginData) => {
     role: user.role,
     email: user.email,
   };
-  const accessToken = generateToken(payLoad, CONFIG.ACCESS_TOKEN_SECRET, "15m");
+  const accessToken = generateToken(payLoad, CONFIG.ACCESS_TOKEN_SECRET, "30m");
   const refreshToken = generateToken(
     { userId: user._id },
     CONFIG.REFRESH_TOKEN_SECRET,

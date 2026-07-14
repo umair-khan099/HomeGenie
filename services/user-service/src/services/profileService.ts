@@ -1,5 +1,7 @@
+import { UploadedFile } from "express-fileupload";
 import { User } from "../models/user.model.js";
 import { AppError } from "../utils/appError.js";
+import { fileUpload } from "../utils/cloudUpload.js";
 
 interface ICreateProfile {
   fullName: string;
@@ -17,6 +19,10 @@ interface IUpdateProfile {
   skills: string[];
   experience: number;
   serviceCategories: string[];
+}
+interface IUpdateProfilePicture {
+  authUserId: string;
+  profileImage: UploadedFile;
 }
 
 export const createProfileService = async (data: ICreateProfile) => {
@@ -82,4 +88,41 @@ export const updateProfileService = async (data: IUpdateProfile) => {
   );
 
   return updatedProfile;
+};
+
+export const updateProfilePicture = async (data: IUpdateProfilePicture) => {
+  const { profileImage, authUserId } = data;
+
+  const user = await User.findOne({ authUserId });
+
+  if (!user) {
+    throw new AppError(404, "user profile not found");
+  }
+
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/jpg",
+  ];
+
+  if (!allowedMimeTypes.includes(profileImage.mimetype)) {
+    throw new AppError(400, "Only JPG, JPEG, PNG and WEBP images are allowed.");
+  }
+
+  console.log("cloudnery prr data ja raha hai ");
+  const uploadeToCloudinary = await fileUpload(
+    profileImage,
+    process.env.CLOUD_FOLDER_NAME!,
+  );
+
+  console.log("cloudnery prr data ja pohoch gaya  hai ");
+
+  console.log(uploadeToCloudinary);
+  const updatedProfilePicture = await User.findOneAndUpdate(
+    { authUserId },
+    { profileImage: uploadeToCloudinary?.secure_url },
+    { returnDocument: "after" },
+  );
+  return updatedProfilePicture;
 };

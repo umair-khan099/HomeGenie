@@ -11,8 +11,8 @@ interface OptionsI {
 export const fileUpload = async (
   file: any,
   folder: string,
-  height: any,
-  width: any,
+  height: any = undefined,
+  width: any = undefined,
 ) => {
   try {
     const options: UploadApiOptions = {
