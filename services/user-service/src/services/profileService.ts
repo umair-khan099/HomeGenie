@@ -30,10 +30,15 @@ export const createProfileService = async (data: ICreateProfile) => {
 
   // cheak if the user exist already
 
+  console.log("Incoming Data:", data);
+
   const isProfileExist = await User.findOne({ authUserId });
-  if (isProfileExist) {
-    throw new AppError(400, "Profile Already created");
-  }
+
+  console.log("Existing Profile:", isProfileExist);
+
+  const existingEmail = await User.findOne({ email });
+
+  console.log("Existing Email:", existingEmail);
   // create profile
 
   const profile = await User.create({

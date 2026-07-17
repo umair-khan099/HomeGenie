@@ -53,7 +53,7 @@ export const signUpService = async (userData: ISignUpData) => {
 
   await createProfileProducer({
     fullName,
-    role,
+    role: user.role,
     email,
     authUserId: user._id,
     profileImage,

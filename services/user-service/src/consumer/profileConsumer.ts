@@ -15,9 +15,8 @@ export const profileConsumer = () => {
         channel.ack(message, false);
       } catch (err) {
         console.log(err);
-
-        channel.nack(message);
-      }
+        channel.ack(message); // sirf test ke liye
+      }   
     }
   });
 };
