@@ -5,7 +5,6 @@ import { fileUpload } from "../utils/cloudUpload.js";
 
 interface ICreateProfile {
   fullName: string;
-  role: "Customer" | "Service Provider";
   authUserId: string;
   email: string;
   profileImage: string;
@@ -14,7 +13,7 @@ interface IUpdateProfile {
   authUserId: string;
   fullName: string;
   bio: string;
-  profileImage: string;
+  profileImage: UploadedFile;
   phone: string;
   skills: string[];
   experience: number;
@@ -26,7 +25,7 @@ interface IUpdateProfilePicture {
 }
 
 export const createProfileService = async (data: ICreateProfile) => {
-  const { fullName, role, authUserId, email, profileImage } = data;
+  const { fullName, authUserId, email, profileImage } = data;
 
   // cheak if the user exist already
 
@@ -43,7 +42,6 @@ export const createProfileService = async (data: ICreateProfile) => {
 
   const profile = await User.create({
     fullName,
-    role,
     authUserId,
     email,
     profileImage,
@@ -115,15 +113,11 @@ export const updateProfilePicture = async (data: IUpdateProfilePicture) => {
     throw new AppError(400, "Only JPG, JPEG, PNG and WEBP images are allowed.");
   }
 
-  console.log("cloudnery prr data ja raha hai ");
   const uploadeToCloudinary = await fileUpload(
     profileImage,
     process.env.CLOUD_FOLDER_NAME!,
   );
 
-  console.log("cloudnery prr data ja pohoch gaya  hai ");
-
-  console.log(uploadeToCloudinary);
   const updatedProfilePicture = await User.findOneAndUpdate(
     { authUserId },
     { profileImage: uploadeToCloudinary?.secure_url },

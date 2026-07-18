@@ -105,6 +105,26 @@ const userSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    // worker related main data
+    workerApplicationStatus: {
+      type: String,
+      enum: ["pending", "rejected", "accepted"],
+      default: "pending",
+    },
+
+    panNumber: {
+      type: String,
+    },
+    adharNumber: {
+      type: String,
+    },
+
+    citizanShip: {
+      type: String,
+    },
+    nativeLanguge: {
+      type: [String],
+    },
   },
   {
     timestamps: true,
