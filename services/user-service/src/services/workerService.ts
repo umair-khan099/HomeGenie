@@ -83,9 +83,9 @@ export const becomeWorkerService = async (data: IBecomeWorker) => {
       adharNumber,
       citizanShip,
       nativeLanguge,
+      workerApplicationStatus: "pending",
     },
     { returnDocument: "after" },
   );
-
   return createWorker;
 };

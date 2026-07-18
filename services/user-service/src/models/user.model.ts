@@ -101,15 +101,11 @@ const userSchema = new Schema(
       default: false,
     },
 
-    lastActiveAt: {
-      type: Date,
-      default: Date.now,
-    },
+   
     // worker related main data
     workerApplicationStatus: {
       type: String,
       enum: ["pending", "rejected", "accepted"],
-      default: "pending",
     },
 
     panNumber: {
@@ -124,6 +120,10 @@ const userSchema = new Schema(
     },
     nativeLanguge: {
       type: [String],
+    },
+     lastActiveAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
