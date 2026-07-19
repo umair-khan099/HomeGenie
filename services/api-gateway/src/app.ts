@@ -63,7 +63,8 @@ app.use("/api/v1/auth/update-password", isAuth, authProxy);
 app.use("/api/v1/user/update-profile-picture", isAuth, userProxy);
 app.use("/api/v1/user/update-profile", isAuth, userProxy);
 app.use("/api/v1/user/get-profile", isAuth, userProxy);
+app.use("/api/v1/user/update-address", isAuth, userProxy);
 
-// WORKER 
+// WORKER
 app.use("/api/v1/user/become-worker", isAuth, userProxy);
 export default app;

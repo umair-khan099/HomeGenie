@@ -125,3 +125,22 @@ export const updateProfilePicture = async (data: IUpdateProfilePicture) => {
   );
   return updatedProfilePicture;
 };
+
+export const updateAddressService = async (
+  authUserId: string,
+  address: string,
+) => {
+  const user = await User.findOne({ authUserId });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  const updateAddress = await User.findOneAndUpdate(
+    { authUserId },
+    { address },
+    { returnDocument: "after" },
+  );
+
+  return updateAddress;
+};

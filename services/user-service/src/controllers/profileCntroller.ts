@@ -1,16 +1,16 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   createProfileService,
   getProfileService,
+  updateAddressService,
   updateProfilePicture,
   updateProfileService,
 } from "../services/profileService.js";
 import { AppResponse } from "../utils/appResponse.js";
 import { AppError } from "../utils/appError.js";
 import { UploadedFile } from "express-fileupload";
-
-
+import { json } from "node:stream/consumers";
 
 export const createProfileController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -107,5 +107,26 @@ export const updateProfilePictureController = asyncHandler(
     return res
       .status(201)
       .json(new AppResponse(200, response, "profile imge update successcully"));
+  },
+);
+
+export const updateAddessController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userDetails = JSON.parse(req.headers["user_id"] as string);
+    const authUserId = userDetails.userId;
+
+    const { address } = req.body;
+
+    const response = await updateAddressService(authUserId, address);
+
+    return res
+      .status(200)
+      .json(
+        new AppResponse(
+          200,
+          { data: response },
+          "user address updated successfully",
+        ),
+      );
   },
 );
