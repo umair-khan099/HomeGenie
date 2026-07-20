@@ -68,6 +68,7 @@ export const updateProfileController = asyncHandler(
       skills = [],
       experience = 0,
       serviceCategories = [],
+      role
     } = req.body;
 
     const response = await updateProfileService({
@@ -79,6 +80,7 @@ export const updateProfileController = asyncHandler(
       skills,
       experience,
       serviceCategories,
+      role
     });
 
     return res

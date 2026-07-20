@@ -18,6 +18,7 @@ interface IUpdateProfile {
   skills: string[];
   experience: number;
   serviceCategories: string[];
+  role: string;
 }
 interface IUpdateProfilePicture {
   authUserId: string;
@@ -66,6 +67,7 @@ export const updateProfileService = async (data: IUpdateProfile) => {
     skills,
     experience,
     serviceCategories,
+    role,
   } = data;
 
   // fetch profile
@@ -86,6 +88,7 @@ export const updateProfileService = async (data: IUpdateProfile) => {
       skills,
       experience,
       serviceCategories,
+      role,
     },
     { returnDocument: "after" },
   );

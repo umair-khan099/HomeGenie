@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { becomeWorkerService } from "../services/workerService.js";
+import {
+  becomeWorkerService,
+  getAllWorkerForVerificationService,
+} from "../services/workerService.js";
 import { UploadedFile } from "express-fileupload";
 import { AppResponse } from "../utils/appResponse.js";
 
@@ -45,6 +48,25 @@ export const becomeWorkerController = asyncHandler(
           200,
           { data: response },
           "Request has been sent to become worker ",
+        ),
+      );
+  },
+);
+
+export const getAllWorkerForVerificationController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userDetails = JSON.parse(req.headers["user_id"] as string);
+    const authUserId = userDetails.userId;
+
+    const response = await getAllWorkerForVerificationService(authUserId);
+
+    res
+      .status(201)
+      .json(
+        new AppResponse(
+          201,
+          { data: response },
+          "fetched all become worker request successfully",
         ),
       );
   },

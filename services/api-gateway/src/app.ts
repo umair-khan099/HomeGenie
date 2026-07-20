@@ -67,4 +67,5 @@ app.use("/api/v1/user/update-address", isAuth, userProxy);
 
 // WORKER
 app.use("/api/v1/user/become-worker", isAuth, userProxy);
+app.use("/api/v1/user/become-worker-requests", isAuth, userProxy);
 export default app;

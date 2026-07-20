@@ -90,4 +90,22 @@ export const becomeWorkerService = async (data: IBecomeWorker) => {
   return createWorker;
 };
 
+export const getAllWorkerForVerificationService = async (
+  authUserId: string,
+) => {
+  const user = await User.findOne({ authUserId });
 
+  if (!user) {
+    throw new AppError(404, "user not found");
+  }
+
+  if (user.role !== "Admin") {
+    throw new AppError(420, "Unauthorized for this request");
+  }
+
+  const getAllrequest = await User.find({
+    workerApplicationStatus: "pending",
+  });
+  return getAllrequest;
+};
+   
